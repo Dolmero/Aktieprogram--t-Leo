@@ -1,5 +1,8 @@
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -9,72 +12,65 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 public class Main {
-	static float preValue, curValue, result,x;
+	static float preValue, curValue, result, x;
+	static JTextArea resultbox = new JTextArea(12,35);
+	static JTextField name = new JTextField(24);
+	static JTextField antal = new JTextField(24);
+	static JTextField ppa = new JTextField(24);
+	static JComboBox<String> court;
+	static JTextField worth = new JTextField(24);
 	public static void main(String s[]) {
 		JFrame frame = new JFrame("Aktieprogram åt leo");
 		
-		JPanel mainPanel = new JPanel(new BorderLayout());
-		JPanel panel2 = new JPanel();
-
+		JPanel mainPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.insets = new Insets(10, 10, 10, 10);
+		
+		constraints.gridx = 0;
+		constraints.gridy = 0;
 		JLabel lname = new JLabel("Name");
-		JTextField name = new JTextField(24);
+		mainPanel.add(lname, constraints);
+		constraints.gridx = 1;
+		mainPanel.add(name, constraints);
 		
+		constraints.gridx = 0;
+		constraints.gridy = 1;
 		JLabel lantal = new JLabel("Antal aktier");
-		JTextField antal = new JTextField(24);
+		mainPanel.add(lantal, constraints);
+		constraints.gridx = 1;
+		mainPanel.add(antal, constraints);
 		
+		constraints.gridx = 0;
+		constraints.gridy = 2;
 		JLabel lppa = new JLabel("Pris per aktie");
-		JTextField ppa = new JTextField(24);
+		mainPanel.add(lppa, constraints);
+		constraints.gridx = 1;
+		mainPanel.add(ppa, constraints);
 		
+		constraints.gridx = 0;
+		constraints.gridy = 3;
 		JLabel lcourt = new JLabel("Courtage");
+		mainPanel.add(lcourt, constraints);
 		String[] choices = { "0.069% - 69SEK            ","0.034% - 49 SEK            ", "0.15% - 39 SEK            ","0% - 0SEK            ","0.25% - 1 SEK            "};
-		final JComboBox<String> court = new JComboBox<String>(choices);
+		court = new JComboBox<String>(choices);
+		constraints.gridx = 1;
+		mainPanel.add(court, constraints);
 		
+		constraints.gridx = 0;
+		constraints.gridy = 4;
 		JLabel lworth = new JLabel("Nuvarande värde");
-		JTextField worth = new JTextField(24);
-		JTextArea resultbox = new JTextArea(12,40);
-		worth.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e){
-				try {
-					preValue = Integer.parseInt(antal.getText()) * Float.parseFloat(ppa.getText());
-					curValue = Integer.parseInt(antal.getText()) * Float.parseFloat(worth.getText());
-					float[] courtage = getCourtage(court.getSelectedIndex());
-					x = (preValue + 2*courtage[0]) / Integer.parseInt(antal.getText());
-					result = curValue - preValue - courtage[0] - courtage[1];
-					
-					StringBuilder sb = new StringBuilder();
-					sb.append("Change: " + result + "\n");
-					sb.append("Sell point to break even: ~" + x + "\n");
-					resultbox.setText(sb.toString());
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		name.setText("PDX");
-		antal.setText("2200");
-		ppa.setText("44.6");
-		worth.setText("65");
+		mainPanel.add(lworth, constraints);
+		constraints.gridx = 1;
+		mainPanel.add(worth, constraints);
+		
+		constraints.gridwidth = 2;
+		constraints.gridx = 0;
+		constraints.gridy = 5;
+		mainPanel.add(resultbox,constraints);
 
-		JButton button = new JButton();
-		button.setText("Räkna ut $$$");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					preValue = Integer.parseInt(antal.getText()) * Float.parseFloat(ppa.getText());
-					curValue = Integer.parseInt(antal.getText()) * Float.parseFloat(worth.getText());
-					float[] courtage = getCourtage(court.getSelectedIndex());
-					x = (preValue + 2*courtage[0]) / Integer.parseInt(antal.getText());
-					result = curValue - preValue - courtage[0] - courtage[1];
-					
-					StringBuilder sb = new StringBuilder();
-					sb.append("Change: " + result + "\n");
-					sb.append("Sell point to break even: ~" + x + "\n");
-					resultbox.setText(sb.toString());
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
+		constraints.gridx = 0;
+		constraints.gridy = 6;
 		JButton button2 = new JButton();
 		button2.setText("Copy to clipboard");
 		button2.addActionListener(new ActionListener() {
@@ -84,55 +80,41 @@ public class Main {
 			    clipboard.setContents(selection, selection);
 			}
 		});
-		
-		panel2.add(name);
-		panel2.add(lname);
-		panel2.add(antal);
-		panel2.add(lantal);
-		panel2.add(ppa);
-		panel2.add(lppa);
-		panel2.add(court);
-		panel2.add(lcourt);
-		panel2.add(worth);
-		panel2.add(lworth);
-		panel2.add(resultbox);
-		panel2.add(button2);
-		mainPanel.add(panel2, BorderLayout.CENTER);
-		mainPanel.add(button, BorderLayout.SOUTH);
-		
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		mainPanel.add(button2, constraints);
+		name.setText("PDX");
+		antal.setText("2200");
+		ppa.setText("44.6");
+		worth.setText("65");
 		frame.add(mainPanel);
-		frame.setSize(500, 430);
+		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+		UpdateThread updates = new UpdateThread();
+		updates.start();
 	}
 	
-	//Returns two different courtage values. One[0] for when you buy, and one[1] for when you sell.
-	private static float[] getCourtage(int index){
-		float[] returnvalue = {0,0};
-		switch(index){
-		case 0:
-			returnvalue[0] = (float) Math.max(69, preValue*0.00069);
-			returnvalue[1] = (float) Math.max(69, curValue*0.00069);
-			break;
-		case 1:
-			returnvalue[0] = (float) Math.max(49, preValue*0.00034);
-			returnvalue[1] = (float) Math.max(49, curValue*0.00034);
-			break;
-		case 2:
-			returnvalue[0] = (float) Math.max(39, preValue*0.0015);
-			returnvalue[1] = (float) Math.max(39, curValue*0.0015);
-			break;
-		case 3:
-			break;
-		case 4:
-			returnvalue[0] = (float) Math.max(1, preValue*0.0025);
-			returnvalue[1] = (float) Math.max(1, curValue*0.0025);
-			break;
-		default:
-			//Should never happen
-			System.out.println(("No courtage selection"));
+	/**
+	 * Gets the user input.
+	 * @return
+	 * [0] number of stocks
+	 * [1] price per stock
+	 * [2] courtage selection index
+	 * [3] current price
+	 */
+	public static returnValues getvalues(){
+		returnValues ret = null;
+		try{
+			ret = new returnValues(Integer.parseInt(antal.getText()), Float.parseFloat(ppa.getText()), court.getSelectedIndex(), Float.parseFloat(worth.getText()));
+		}catch(Exception e){
+			System.out.println("Can't convert one of the strings, but hey lets not crash");
 		}
-		return returnvalue;
+		return ret;
+	}
+	
+	public static void setText(String txt, float profit){
+		result = profit;
+		resultbox.setText(txt);
 	}
 }
