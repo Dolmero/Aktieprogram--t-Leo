@@ -10,7 +10,7 @@ public class UpdateThread extends Thread {
 	}
 	
 	public void run(){
-		while (true)
+		while (true){
 		if (findChanges()) {
 			try {
 				float preValue = count * buyPrice;
@@ -26,6 +26,13 @@ public class UpdateThread extends Thread {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
+		}
+		try {
+			Thread.sleep(100); // Limit cycles. Ghetto fix.
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		}
 	}
 	
