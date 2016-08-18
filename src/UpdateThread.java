@@ -1,4 +1,4 @@
-// Names in English in this class and Swedish in the other... 
+// Names in English in this class and mixed in Main... 
 
 public class UpdateThread extends Thread {
 	int count;
@@ -28,7 +28,7 @@ public class UpdateThread extends Thread {
 			}
 		}
 		try {
-			Thread.sleep(100); // Limit cycles. Ghetto fix.
+			Thread.sleep(150); // Limit cycles. Ghetto fix.
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
