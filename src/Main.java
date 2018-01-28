@@ -13,7 +13,7 @@ public class Main {
 	static float preValue, curValue, result, x;
 	static JTextArea resultbox = new JTextArea(12,35);
 	static JTextField name = new JTextField(24);
-	static JTextField antal = new JTextField(24);
+	static JTextField antal = new JTextField();
 	static JTextField ppa = new JTextField(24);
 	static JComboBox<String> court;
 	static JTextField worth = new JTextField(24);
