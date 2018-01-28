@@ -8,8 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
-q
-public class Main {
+
+public class Main {s
 	static float preValue, curValue, result, x;
 	static JTextArea resultbox = new JTextArea(12,35);
 	static JTextField name = new JTextField(24);
