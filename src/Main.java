@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
-yeaaaaaaa 3 3 3 3
+yeaaaaaaa 4 4 4 
 public class Main {
 	static float preValue, curValue, result, x;
 	static JTextArea resultbox = new JTextArea(12,35);
