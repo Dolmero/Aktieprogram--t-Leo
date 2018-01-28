@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-public class Main {s
+public class Main {
 	static float preValue, curValue, result, x;
 	static JTextArea resultbox = new JTextArea(12,35);
 	static JTextField name = new JTextField(24);
